@@ -1,17 +1,19 @@
 import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-    plugins: [react()],
+    plugins: [react(),tailwindcss(),],
     server: {
-        allowedHosts: ['mzlinux.video-miner.xyz'],
+        allowedHosts: ['localhost','.pages.dev','.open-pool.com'],
     },
     build: {
         rollupOptions: {
             output: {
                 manualChunks: {
                     react: ['react', 'react-dom'],
-                    mui: ['@mui/material', '@mui/icons-material', '@mui/x-data-grid', '@emotion/react', '@emotion/styled']
+                    recharts: ['recharts'],
+                    lucide: ['lucide-react']
                 },
             },
         },
