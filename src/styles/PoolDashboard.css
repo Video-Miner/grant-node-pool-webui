@@ -1,0 +1,241 @@
+@import "tailwindcss";
+
+/* PoolDashboard.css */
+.dashboard {
+    @apply min-h-screen bg-gray-100 p-6 transition-colors duration-200;
+}
+
+.dashboard.dark {
+    @apply bg-gray-900;
+}
+
+.dashboard-container {
+    @apply max-w-7xl mx-auto space-y-6;
+}
+
+.dashboard-loading {
+    @apply flex items-center justify-center min-h-screen text-lg text-gray-700 dark:text-gray-200;
+}
+
+.dashboard-header {
+    @apply flex items-center justify-between mb-4 mt-4;
+}
+.centered-header {
+    @apply flex justify-center items-center text-center;
+}
+
+.dashboard-title {
+    @apply text-2xl font-bold;
+}
+
+.dashboard-refresh-container {
+    @apply flex items-center space-x-2;
+}
+
+.last-updated-text {
+    @apply text-sm text-gray-700 dark:text-gray-200;
+}
+
+.dashboard-card {
+    @apply bg-white shadow-md rounded-lg p-4;
+}
+
+.dashboard-card-header {
+    @apply border-b pb-2 mb-2;
+}
+
+.dashboard-card-title {
+    @apply text-lg font-semibold;
+}
+
+.dashboard-card-content {
+    /* Add any desired styles here */
+}
+
+.dashboard-chart-container {
+    @apply h-60;
+}
+
+.dashboard-chart-container.spaced {
+    @apply mt-10;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    @apply flex justify-end mb-4;
+}
+
+.theme-toggle-button {
+    @apply p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200;
+}
+
+.dark .theme-toggle-button {
+    @apply bg-gray-700 hover:bg-gray-600;
+}
+
+.theme-icon {
+    @apply h-5 w-5 text-gray-700;
+}
+
+.dark .theme-icon {
+    @apply text-gray-200;
+}
+
+/* Overview Section */
+.overview-section {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-6;
+}
+
+.metric-header {
+    @apply flex flex-row items-center justify-between space-y-0 pb-2;
+}
+
+.metric-title {
+    @apply text-sm font-medium;
+}
+
+.metric-value {
+    @apply text-2xl font-bold;
+}
+
+.metric-icon {
+    @apply h-4 w-4;
+}
+
+.metric-icon-success {
+    @apply text-green-500;
+}
+
+.metric-icon-warning {
+    @apply text-yellow-500;
+}
+
+.metric-icon-info {
+    @apply text-blue-500;
+}
+
+/* Members Table */
+.members-table-container {
+    @apply overflow-x-auto;
+}
+
+.members-table {
+    @apply w-full;
+}
+
+.members-table th {
+    @apply px-4 py-2 text-left border-b border-gray-200;
+}
+
+.dark .members-table th {
+    @apply border-gray-700;
+}
+
+.members-table td {
+    @apply px-4 py-2 border-b border-gray-200;
+}
+
+.dark .members-table td {
+    @apply border-gray-700;
+}
+
+.address-cell {
+    @apply font-mono;
+}
+
+.number-cell {
+    @apply text-right;
+}
+
+.status-cell {
+    @apply text-center;
+}
+
+.status-icon {
+    @apply h-5 w-5 inline;
+}
+
+.status-icon-success {
+    @apply text-green-500;
+}
+
+.status-icon-error {
+    @apply text-red-500;
+}
+
+/* Regions Section */
+.regions-section {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+}
+
+/* Add a chart title */
+.chart-title {
+    @apply text-center text-lg font-bold
+}
+
+
+.chart-container {
+    @apply h-80;
+}
+
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+    @apply stroke-gray-700;
+}
+
+.dark .recharts-text {
+    @apply fill-gray-300;
+}
+
+.region-list {
+    @apply space-y-4;
+}
+
+.region-card {
+    @apply bg-gray-50 p-4 rounded-lg;
+}
+
+.dark .region-card {
+    @apply bg-gray-800;
+}
+
+.region-header {
+    @apply flex justify-between items-center mb-2;
+}
+
+.region-name {
+    @apply font-semibold text-lg;
+}
+
+.region-metrics {
+    @apply grid grid-cols-3 gap-4 text-sm;
+}
+
+.metric {
+    @apply flex flex-col;
+}
+
+.metric-label {
+    @apply text-gray-500;
+}
+
+.dark .metric-label {
+    @apply text-gray-400;
+}
+
+.metric-data {
+    @apply font-medium;
+}
+
+/* Dark mode Card overrides */
+.dark :where(.css-dev-only-do-not-override-[hash]).ant-card {
+    @apply bg-gray-800 border-gray-700;
+}
+
+.dark :where(.css-dev-only-do-not-override-[hash]).ant-card-head {
+    @apply border-gray-700;
+}
+
+.dark :where(.css-dev-only-do-not-override-[hash]).ant-card-head-title {
+    @apply text-gray-100;
+}
