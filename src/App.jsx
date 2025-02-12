@@ -56,7 +56,6 @@ const PoolDashboard = () => {
     return (
         <div className={`dashboard ${darkMode ? 'dark' : ''}`}>
             <div className="dashboard-container">
-                {/* Header: Refresh + Last Updated on left, Dark Mode Toggle on right */}
                 <div className="dashboard-header">
                     <div className="dashboard-refresh-container">
                         <button onClick={loadData} className="theme-toggle-button">
@@ -72,12 +71,10 @@ const PoolDashboard = () => {
                         </button>
                     </div>
                 </div>
-
-                {/* Pool Overview Section */}
                 <div className="overview-section">
                     <Card>
                         <CardHeader className="metric-header">
-                            <CardTitle className="metric-title">Total Payout (ETH)</CardTitle>
+                            <CardTitle className="metric-title">Paid (ETH)</CardTitle>
                             <DollarSign className="metric-icon metric-icon-success" />
                         </CardHeader>
                         <CardContent>
@@ -88,7 +85,7 @@ const PoolDashboard = () => {
                     </Card>
                     <Card>
                         <CardHeader className="metric-header">
-                            <CardTitle className="metric-title">Pending Payout (ETH)</CardTitle>
+                            <CardTitle className="metric-title">Pending (ETH)</CardTitle>
                             <Activity className="metric-icon metric-icon-warning" />
                         </CardHeader>
                         <CardContent>
@@ -109,8 +106,6 @@ const PoolDashboard = () => {
                         </CardContent>
                     </Card>
                 </div>
-
-                {/* Pool Members Section */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Global Pool Members</CardTitle>
@@ -121,17 +116,21 @@ const PoolDashboard = () => {
                                 <thead>
                                 <tr>
                                     <th>Address</th>
+                                    <th className="number-cell">Paid (ETH)</th>
                                     <th className="number-cell">Pending (ETH)</th>
-                                    <th className="number-cell">Total Payout (ETH)</th>
-                                    <th className="status-cell">Status</th>
+                                    <th>Type</th>
+                                    <th>Region</th>
+                                    <th className="status-cell">Online</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {globalNodes.map((node, index) => (
                                     <tr key={index}>
                                         <td className="address-cell">{node.ethAddress}</td>
-                                        <td className="number-cell">{node.pending_fees}</td>
                                         <td className="number-cell">{node.paid_fees}</td>
+                                        <td className="number-cell">{node.pending_fees}</td>
+                                        <td >{node.nodeType}</td>
+                                        <td >{node.region}</td>
                                         <td className="status-cell">
                                             {node.isConnected ? (
                                                 <CheckCircle className="status-icon status-icon-success"/>
@@ -146,8 +145,6 @@ const PoolDashboard = () => {
                         </div>
                     </CardContent>
                 </Card>
-
-                {/* Region Details Section */}
                 <div className="regions-section">
                     <Card>
                         <CardHeader>
@@ -170,57 +167,64 @@ const PoolDashboard = () => {
 
                             {/* Chart 2: Total Payout by Region */}
                             <div className="dashboard-chart-container spaced">
-                                <h3 className="chart-title">Total Payout by Region</h3>
+                                <h3 className="chart-title">Payouts by Region</h3>
                                 <ResponsiveContainer>
                                     <BarChart data={regionChartData}>
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="name" />
                                         <YAxis  />
                                         <Tooltip />
-                                        <Bar dataKey="totalPayout" fill="#10B981" name="Total Payout" />
+                                        <Bar dataKey="totalPayout" fill="#10B981" name="Payouts" />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
 
                         </CardContent>
                     </Card>
-
                     <Card>
                         <CardHeader>
                             <CardTitle>Region Details</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="region-list">
-                                {regionChartData.map((region, index) => (
-                                    <div key={index} className="region-card">
-                                        <div className="region-header">
-                                            <h3 className="region-name">{region.name}</h3>
-                                            {region.status === 'up' ? (
-                                                <CheckCircle className="status-icon status-icon-success" />
-                                            ) : (
-                                                <XCircle className="status-icon status-icon-error" />
-                                            )}
-                                        </div>
-                                        <div className="region-metrics">
-                                            <div className="metric">
-                                                <p className="metric-label">Nodes</p>
-                                                {/* Now shows connected/total */}
-                                                <p className="metric-data">{region.nodesLabel}</p>
-                                            </div>
-                                            <div className="metric">
-                                                <p className="metric-label">Total Payout (ETH)</p>
-                                                <p className="metric-data">{region.totalPayout}</p>
-                                            </div>
-                                            <div className="metric">
-                                                <p className="metric-label">Pending (ETH)</p>
-                                                <p className="metric-data">{region.pendingPayout}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                                <table className="region-table">
+                                    <thead>
+                                    <tr>
+                                        <th>Region</th>
+                                        <th>Nodes</th>
+                                        <th>Type</th>
+                                        <th>Paid (ETH)</th>
+                                        <th>Pending (ETH)</th>
+                                        <th>Online</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {regionChartData.map((region, index) => (
+                                        <tr key={index}>
+                                            <td className="region-name">{region.name}</td>
+                                            <td className="number-cell">{region.nodesLabel}</td>
+                                            <td className="node-type-cell">
+                                                {region.nodeTypes.length > 0
+                                                    ? region.nodeTypes.join(", ")
+                                                    : "N/A"}
+                                            </td>
+                                            <td className="number-cell">{region.totalPayout}</td>
+                                            <td className="number-cell">{region.pendingPayout}</td>
+                                            <td className="status-cell">
+                                                {region.status === "up" ? (
+                                                    <CheckCircle className="status-icon status-icon-success" />
+                                                ) : (
+                                                    <XCircle className="status-icon status-icon-error" />
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
                             </div>
                         </CardContent>
                     </Card>
+
                 </div>
             </div>
         </div>

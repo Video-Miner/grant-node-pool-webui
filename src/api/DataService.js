@@ -109,14 +109,15 @@ const transformData = (data)=> {
 
     result.poolOverview = { summary: globalSummary, nodes: globalNodes };
     result.regionChartData = Object.values(result.regions).map(region => ({
-        name: region.label,
-        connectedNodes: region.summary.connectedNodes,
-        totalNodes: region.summary.totalNodes,
-        nodesLabel: `${region.summary.connectedNodes}/${region.summary.totalNodes}`,
-        totalPayout: region.summary.totalPaidFees,
-        pendingPayout: region.summary.totalPendingFees,
-        status: region.isDown ? "down" : "up",
-    }));
+            name: region.label,
+            nodeTypes: Object.keys(region.nodeTypes),
+            connectedNodes: region.summary.connectedNodes,
+            totalNodes: region.summary.totalNodes,
+            nodesLabel: `${region.summary.connectedNodes}/${region.summary.totalNodes}`,
+            totalPayout: region.summary.totalPaidFees,
+            pendingPayout: region.summary.totalPendingFees,
+            status: region.isDown ? "down" : "up",
+        }));
 
     return result;
 }

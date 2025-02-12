@@ -168,11 +168,89 @@
     @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
 }
 
-/* Add a chart title */
-.chart-title {
-    @apply text-center text-lg font-bold
+.region-list {
+    overflow-x: auto;
 }
 
+.region-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.region-table th,
+.region-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .region-table th,
+.dark .region-table td {
+    border-bottom: 1px solid #374151;
+}
+
+.region-table th {
+    font-weight: 600;
+    color: #374151;
+}
+
+.dark .region-table th {
+    color: #d1d5db;
+}
+
+.region-name {
+    font-weight: bold;
+}
+
+.number-cell {
+    text-align: right;
+}
+
+.node-type-cell {
+    white-space: nowrap;
+}
+
+/* Ensures node types appear as a comma-separated list */
+.node-types-list {
+    display: inline;
+}
+
+.node-type-item {
+    font-size: 0.85rem;
+    color: #374151;
+    display: inline;
+}
+
+.dark .node-type-item {
+    color: #d1d5db;
+}
+
+/* Add commas between node types but not after the last item */
+.node-type-item:not(:last-child)::after {
+    content: ", ";
+}
+
+.status-cell {
+    text-align: center;
+}
+
+.status-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.status-icon-success {
+    color: #10b981;
+}
+
+.status-icon-error {
+    color: #ef4444;
+}
+
+/* Add a chart title */
+.chart-title {
+    @apply text-center text-lg font-bold;
+}
 
 .chart-container {
     @apply h-80;
@@ -185,46 +263,6 @@
 
 .dark .recharts-text {
     @apply fill-gray-300;
-}
-
-.region-list {
-    @apply space-y-4;
-}
-
-.region-card {
-    @apply bg-gray-50 p-4 rounded-lg;
-}
-
-.dark .region-card {
-    @apply bg-gray-800;
-}
-
-.region-header {
-    @apply flex justify-between items-center mb-2;
-}
-
-.region-name {
-    @apply font-semibold text-lg;
-}
-
-.region-metrics {
-    @apply grid grid-cols-3 gap-4 text-sm;
-}
-
-.metric {
-    @apply flex flex-col;
-}
-
-.metric-label {
-    @apply text-gray-500;
-}
-
-.dark .metric-label {
-    @apply text-gray-400;
-}
-
-.metric-data {
-    @apply font-medium;
 }
 
 /* Dark mode Card overrides */
