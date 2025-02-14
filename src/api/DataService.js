@@ -132,7 +132,7 @@ export default class DataService {
             const responses = await Promise.all(
                 REGIONS.map(async (region) => {
                     try {
-                        const res = await fetch(`${region.url}/transcoders`);
+                        const res = await fetch(`${region.url}/workers`);
                         if (!res.ok) throw new Error(`Failed to fetch ${region.label}`);
                         const data = await res.json();
                         return {

@@ -68,16 +68,6 @@ const PoolDashboard = () => {
                 <section className="overview-section" aria-label="Global Overview">
                     <Card>
                         <CardHeader className="metric-header">
-                            <CardTitle className="metric-title">Paid (ETH)</CardTitle>
-                            <DollarSign className="metric-icon metric-icon-success" />
-                        </CardHeader>
-                        <CardContent>
-                            <p className="metric-value">{globalSummary.totalPaidFees}</p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="metric-header">
                             <CardTitle className="metric-title">Pending (ETH)</CardTitle>
                             <Activity className="metric-icon metric-icon-warning" />
                         </CardHeader>
@@ -85,7 +75,15 @@ const PoolDashboard = () => {
                             <p className="metric-value">{globalSummary.totalPendingFees}</p>
                         </CardContent>
                     </Card>
-
+                    <Card>
+                        <CardHeader className="metric-header">
+                            <CardTitle className="metric-title">Paid (ETH)</CardTitle>
+                            <DollarSign className="metric-icon metric-icon-success" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="metric-value">{globalSummary.totalPaidFees}</p>
+                        </CardContent>
+                    </Card>
                     <Card>
                         <CardHeader className="metric-header">
                             <CardTitle className="metric-title">Connected Nodes</CardTitle>
@@ -113,8 +111,8 @@ const PoolDashboard = () => {
                                         <th scope="col">Address</th>
                                         <th scope="col">Type</th>
                                         <th scope="col">Region</th>
-                                        <th scope="col" className="number-cell">Paid (ETH)</th>
                                         <th scope="col" className="number-cell">Pending (ETH)</th>
+                                        <th scope="col" className="number-cell">Paid (ETH)</th>
                                         <th scope="col" className="status-cell">Online</th>
                                     </tr>
                                     </thead>
@@ -124,8 +122,8 @@ const PoolDashboard = () => {
                                             <td className="address-cell">{node.ethAddress}</td>
                                             <td>{node.nodeType}</td>
                                             <td>{node.region}</td>
-                                            <td className="number-cell">{node.paid_fees}</td>
                                             <td className="number-cell">{node.pending_fees}</td>
+                                            <td className="number-cell">{node.paid_fees}</td>
                                             <td className="status-cell">
                                                 {node.isConnected ? (
                                                     <CheckCircle className="status-icon status-icon-success" aria-label="Online" />
@@ -189,8 +187,8 @@ const PoolDashboard = () => {
                                         <th scope="col">Region</th>
                                         <th scope="col">Nodes</th>
                                         <th scope="col">Type</th>
-                                        <th scope="col">Paid (ETH)</th>
                                         <th scope="col">Pending (ETH)</th>
+                                        <th scope="col">Paid (ETH)</th>
                                         <th scope="col">Online</th>
                                     </tr>
                                     </thead>
@@ -202,8 +200,8 @@ const PoolDashboard = () => {
                                             <td className="node-type-cell">
                                                 {region.nodeTypes.length > 0 ? region.nodeTypes.join(', ') : 'N/A'}
                                             </td>
-                                            <td className="number-cell">{region.totalPayout}</td>
                                             <td className="number-cell">{region.pendingPayout}</td>
+                                            <td className="number-cell">{region.totalPayout}</td>
                                             <td className="status-cell">
                                                 {region.status === 'up' ? (
                                                     <CheckCircle className="status-icon status-icon-success" aria-label="Online" />
