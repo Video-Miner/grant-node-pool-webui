@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
-/* PoolDashboard.css */
+/* Base dashboard styles */
 .dashboard {
-    @apply min-h-screen bg-gray-100 p-6 transition-colors duration-200;
+    @apply min-h-screen bg-gray-50 text-gray-900 p-4 transition-colors duration-200;
 }
 
 .dashboard.dark {
-    @apply bg-gray-900;
+    @apply bg-gray-900 text-gray-100;
 }
 
 .dashboard-container {
@@ -14,59 +14,36 @@
 }
 
 .dashboard-loading {
-    @apply flex items-center justify-center min-h-screen text-lg text-gray-700 dark:text-gray-200;
+    @apply flex flex-col items-center justify-center min-h-screen text-lg;
 }
 
 .dashboard-header {
-    @apply flex items-center justify-between mb-4 mt-4;
-}
-.centered-header {
-    @apply flex justify-center items-center text-center;
+    @apply flex items-center justify-between mb-6;
 }
 
 .dashboard-title {
-    @apply text-2xl font-bold;
+    @apply text-3xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+}
+
+.dark .dashboard-title {
+    @apply from-blue-400 to-purple-400;
 }
 
 .dashboard-refresh-container {
-    @apply flex items-center space-x-2;
+    @apply flex items-center space-x-3;
 }
 
 .last-updated-text {
-    @apply text-sm text-gray-700 dark:text-gray-200;
-}
-
-.dashboard-card {
-    @apply bg-white shadow-md rounded-lg p-4;
-}
-
-.dashboard-card-header {
-    @apply border-b pb-2 mb-2;
-}
-
-.dashboard-card-title {
-    @apply text-lg font-semibold;
-}
-
-.dashboard-card-content {
-    /* Add any desired styles here */
-}
-
-.dashboard-chart-container {
-    @apply h-60;
-}
-
-.dashboard-chart-container.spaced {
-    @apply mt-10;
+    @apply text-sm text-gray-600 dark:text-gray-400;
 }
 
 /* Theme Toggle */
 .theme-toggle {
-    @apply flex justify-end mb-4;
+    @apply flex justify-end;
 }
 
 .theme-toggle-button {
-    @apply p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200;
+    @apply p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200 flex items-center justify-center;
 }
 
 .dark .theme-toggle-button {
@@ -74,16 +51,63 @@
 }
 
 .theme-icon {
-    @apply h-5 w-5 text-gray-700;
+    @apply h-5 w-5 text-gray-700 dark:text-gray-300;
 }
 
-.dark .theme-icon {
-    @apply text-gray-200;
+/* Card styles */
+.dashboard-card {
+    @apply bg-white rounded-lg shadow-md overflow-hidden transition-all duration-200 border border-gray-100;
+}
+
+.dark .dashboard-card {
+    @apply bg-gray-800 border-gray-700;
+}
+
+.dashboard-card-header {
+    @apply px-6 py-4 border-b border-gray-100 flex items-center justify-between;
+}
+
+.dark .dashboard-card-header {
+    @apply border-gray-700;
+}
+
+.dashboard-card-title {
+    @apply text-lg font-semibold;
+}
+
+.dashboard-card-content {
+    @apply p-6;
+}
+
+/* Dashboard Tabs */
+.dashboard-tabs {
+    @apply flex gap-1 mb-6 bg-white dark:bg-gray-800 p-1 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700;
+}
+
+.tab-button {
+    @apply flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-gray-600 dark:text-gray-400 font-medium transition-all;
+}
+
+.tab-button:hover {
+    @apply bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-200;
+}
+
+.tab-button.active {
+    @apply bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400;
+}
+
+.tab-icon {
+    @apply h-4 w-4;
+}
+
+/* Dashboard content area */
+.dashboard-content {
+    @apply space-y-6;
 }
 
 /* Overview Section */
 .overview-section {
-    @apply grid grid-cols-1 md:grid-cols-3 gap-6;
+    @apply grid grid-cols-1 md:grid-cols-3 gap-6 mb-6;
 }
 
 .metric-header {
@@ -91,15 +115,19 @@
 }
 
 .metric-title {
-    @apply text-sm font-medium;
+    @apply text-sm font-medium text-gray-500 dark:text-gray-400;
 }
 
 .metric-value {
-    @apply text-2xl font-bold;
+    @apply text-2xl font-bold mb-1;
+}
+
+.metric-subtitle {
+    @apply text-xs text-gray-500 dark:text-gray-400;
 }
 
 .metric-icon {
-    @apply h-4 w-4;
+    @apply h-5 w-5;
 }
 
 .metric-icon-success {
@@ -107,155 +135,127 @@
 }
 
 .metric-icon-warning {
-    @apply text-yellow-500;
+    @apply text-amber-500;
 }
 
 .metric-icon-info {
     @apply text-blue-500;
 }
 
-/* Members Table */
-.members-table-container {
-    @apply overflow-x-auto;
-}
-
-.members-table {
-    @apply w-full;
-}
-
-.members-table th {
-    @apply px-4 py-2 text-left border-b border-gray-200;
-}
-
-.dark .members-table th {
-    @apply border-gray-700;
-}
-
-.members-table td {
-    @apply px-4 py-2 border-b border-gray-200;
-}
-
-.dark .members-table td {
-    @apply border-gray-700;
-}
-
-.address-cell {
-    @apply font-mono;
-}
-
-.number-cell {
-    @apply text-right;
-}
-
-.status-cell {
-    @apply text-center;
-}
-
-.status-icon {
-    @apply h-5 w-5 inline;
-}
-
-.status-icon-success {
-    @apply text-green-500;
-}
-
-.status-icon-error {
+.metric-icon-error {
     @apply text-red-500;
 }
 
-/* Regions Section */
-.regions-section {
-    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+/* Chart grid */
+.chart-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6;
 }
 
-.region-list {
-    overflow-x: auto;
+.card-col-span-1 {
+    @apply col-span-1;
 }
 
-.region-table {
-    width: 100%;
-    border-collapse: collapse;
+.card-col-span-2 {
+    @apply md:col-span-2;
 }
 
-.region-table th,
-.region-table td {
-    padding: 0.5rem;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
+.card-col-span-3 {
+    @apply md:col-span-2 xl:col-span-3;
 }
 
-.dark .region-table th,
-.dark .region-table td {
-    border-bottom: 1px solid #374151;
+.card-col-span-4 {
+    @apply md:col-span-2 xl:col-span-4;
 }
 
-.region-table th {
-    font-weight: 600;
-    color: #374151;
+/* Worker statistics grid */
+.worker-stats-grid {
+    @apply grid grid-cols-1 gap-6;
 }
 
-.dark .region-table th {
-    color: #d1d5db;
+/* Rankings table */
+.rankings-table-container {
+    @apply overflow-x-auto;
 }
 
-.region-name {
-    font-weight: bold;
+.rankings-table {
+    @apply w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700;
 }
 
-.number-cell {
-    text-align: right;
+.rankings-table th {
+    @apply px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider;
 }
 
-.node-type-cell {
-    white-space: nowrap;
+.rankings-table td {
+    @apply px-4 py-3 whitespace-nowrap text-sm;
 }
 
-/* Ensures node types appear as a comma-separated list */
-.node-types-list {
-    display: inline;
+.rankings-table tr {
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700/50;
 }
 
-.node-type-item {
-    font-size: 0.85rem;
-    color: #374151;
-    display: inline;
+.rankings-table .top-rank {
+    @apply bg-blue-50 dark:bg-gray-700/50;
 }
 
-.dark .node-type-item {
-    color: #d1d5db;
+.rank-icon {
+    @apply h-5 w-5;
 }
 
-/* Add commas between node types but not after the last item */
-.node-type-item:not(:last-child)::after {
-    content: ", ";
+.rank-1 {
+    @apply text-amber-500;
 }
 
-.status-cell {
-    text-align: center;
+.rank-2 {
+    @apply text-gray-400;
 }
 
-.status-icon {
-    width: 18px;
-    height: 18px;
+.rank-3 {
+    @apply text-amber-600;
 }
 
-.status-icon-success {
-    color: #10b981;
+.rank-number {
+    @apply text-gray-500 text-sm font-medium;
 }
 
-.status-icon-error {
-    color: #ef4444;
+/* Worker table */
+.worker-table-container {
+    @apply overflow-x-auto;
 }
 
-/* Add a chart title */
-.chart-title {
-    @apply text-center text-lg font-bold;
+.worker-table {
+    @apply w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700;
 }
 
-.chart-container {
-    @apply h-80;
+.worker-table th {
+    @apply px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider;
 }
 
+.worker-table td {
+    @apply px-4 py-3 whitespace-nowrap text-sm;
+}
+
+.worker-table tr {
+    @apply border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50;
+}
+
+.worker-table tr:last-child {
+    @apply border-b-0;
+}
+
+/* Node type badges */
+.node-type-badge {
+    @apply inline-block px-2 py-1 text-xs rounded-full font-medium;
+}
+
+.node-type-transcode {
+    @apply bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300;
+}
+
+.node-type-ai {
+    @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300;
+}
+
+/* Recharts dark mode adjustments */
 .dark .recharts-cartesian-grid-horizontal line,
 .dark .recharts-cartesian-grid-vertical line {
     @apply stroke-gray-700;
@@ -265,15 +265,68 @@
     @apply fill-gray-300;
 }
 
-/* Dark mode Card overrides */
-.dark :where(.css-dev-only-do-not-override-[hash]).ant-card {
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip {
     @apply bg-gray-800 border-gray-700;
 }
 
-.dark :where(.css-dev-only-do-not-override-[hash]).ant-card-head {
-    @apply border-gray-700;
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-label,
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item {
+    @apply text-gray-300;
 }
 
-.dark :where(.css-dev-only-do-not-override-[hash]).ant-card-head-title {
-    @apply text-gray-100;
+.dark .recharts-legend-item-text {
+    @apply text-gray-300;
+}
+
+/* Accessibility */
+.sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+}
+
+/* Animations */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Buttons */
+.btn-primary {
+    @apply px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors;
+}
+
+.dark .btn-primary {
+    @apply bg-blue-700 hover:bg-blue-800;
+}
+
+/* Text alignment utilities */
+.text-right {
+    @apply text-right;
+}
+
+.text-left {
+    @apply text-left;
+}
+
+.text-center {
+    @apply text-center;
+}
+
+.chart-container {
+    @apply w-full h-80;
+}
+
+.dashboard-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6 mb-6;
+}
+
+.dashboard-grid-card {
+    @apply w-full;
 }

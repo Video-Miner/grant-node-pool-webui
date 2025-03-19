@@ -1,153 +1,248 @@
-const urls = import.meta.env.VITE_REGIONAL_API_URLS || "";
-const REGIONS = urls
-    .split(", ")
-    .map((entry) => {
-        const match = entry.match(/(.+?)\[(.+?)\]/);
-        return match ? {url: match[1], label: match[2]} : null;
-    })
-    .filter(Boolean);
-
-const transformData = (data)=> {
-    // Helper to format a monetary value (in wei) to an ETH string with 6 decimals.
-    const formatMoney = (weiValue) => {
-        return (Number(weiValue) / 1e18).toFixed(6);
-    };
-
-    // Helper to convert a string to title case.
-    // If the string length is exactly 2, returns the entire string in uppercase.
-    function toTitleCase(str) {
-        if (str.length === 2) {
-            return str.toUpperCase();
-        }
-        return str
-            .split(/[\s-_]+/)
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ');
-    }
-
-    // Initialize the output structure.
-    const result = {
-        regions: {},
-    };
-    // Global summary accumulators.
-    let globalSummary = {
-        totalNodes: 0,
-        connectedNodes: 0,
-        totalPendingFees: 0, // We'll accumulate numeric totals then format later.
-        totalPaidFees: 0,
-    };
-    let globalNodes = [];
-
-    data.forEach(regionData => {
-        const {region, isRegionDown, nodes} = regionData;
-
-        result.regions[region] = {
-            label: region,
-            nodes: [],
-            isDown: isRegionDown,
-            summary: {totalNodes: 0, connectedNodes: 0, totalPendingFees: 0, totalPaidFees: 0},
-            nodeTypes: {}
-        };
-
-        if (isRegionDown) return; // Skip processing nodes if the region is down
-
-        nodes.forEach(node => {
-            if (!isValidEthAddress(node.ethAddress)) {
-                throw new Error(`Invalid eth address: ${node.ethAddress}`);
-            }
-
-            node.last_updated = new Date(node.last_updated);
-            const pendingEthNum = Number(node.pending_fees) / 1e18;
-            const paidEthNum = Number(node.paid_fees) / 1e18;
-            node.pending_fees = formatMoney(node.pending_fees);
-            node.paid_fees = formatMoney(node.paid_fees);
-            node.isConnected = Boolean(node.is_connected);
-            node.nodeType = toTitleCase(node.nodeType || "Unknown");
-
-            globalNodes.push(node);
-
-            // Use the region from our transformed data.
-            const regionObj = result.regions[node.region];
-            regionObj.nodes.push(node);
-            regionObj.summary.totalNodes++;
-            if (node.isConnected) regionObj.summary.connectedNodes++;
-            regionObj.summary.totalPendingFees += pendingEthNum;
-            regionObj.summary.totalPaidFees += paidEthNum;
-
-            if (!regionObj.nodeTypes[node.nodeType]) {
-                regionObj.nodeTypes[node.nodeType] = {
-                    nodes: [],
-                    summary: { totalNodes: 0, connectedNodes: 0, totalPendingFees: 0, totalPaidFees: 0 }
-                };
-            }
-
-            regionObj.nodeTypes[node.nodeType].nodes.push(node);
-            regionObj.nodeTypes[node.nodeType].summary.totalNodes++;
-            if (node.isConnected) regionObj.nodeTypes[node.nodeType].summary.connectedNodes++;
-            regionObj.nodeTypes[node.nodeType].summary.totalPendingFees += pendingEthNum;
-            regionObj.nodeTypes[node.nodeType].summary.totalPaidFees += paidEthNum;
-
-            globalSummary.totalNodes++;
-            if (node.isConnected) globalSummary.connectedNodes++;
-            globalSummary.totalPendingFees += pendingEthNum;
-            globalSummary.totalPaidFees += paidEthNum;
-        });
-    });
-
-    // Format totals.
-    globalSummary.totalPendingFees = globalSummary.totalPendingFees.toFixed(6);
-    globalSummary.totalPaidFees = globalSummary.totalPaidFees.toFixed(6);
-
-    Object.values(result.regions).forEach(region => {
-        region.summary.totalPendingFees = region.summary.totalPendingFees.toFixed(6);
-        region.summary.totalPaidFees = region.summary.totalPaidFees.toFixed(6);
-        Object.values(region.nodeTypes).forEach(nt => {
-            nt.summary.totalPendingFees = nt.summary.totalPendingFees.toFixed(6);
-            nt.summary.totalPaidFees = nt.summary.totalPaidFees.toFixed(6);
-        });
-    });
-
-    result.poolOverview = { summary: globalSummary, nodes: globalNodes };
-    result.regionChartData = Object.values(result.regions).map(region => ({
-            name: region.label,
-            nodeTypes: Object.keys(region.nodeTypes),
-            connectedNodes: region.summary.connectedNodes,
-            totalNodes: region.summary.totalNodes,
-            nodesLabel: `${region.summary.connectedNodes}/${region.summary.totalNodes}`,
-            totalPayout: region.summary.totalPaidFees,
-            pendingPayout: region.summary.totalPendingFees,
-            status: region.isDown ? "down" : "up",
-        }));
-
-    return result;
-}
-
-const isValidEthAddress= (address)=> {
-    return /^0x[a-fA-F0-9]{40}$/.test(address);
-}
-
+// DataService.js
 export default class DataService {
+    static BASE_URL = "https://obj-store.xode.app/open-pool-metrics";
+    static REGIONS = ["us-central", "us-west", "eu-central", "oceania"];
+    static NODE_TYPES = ["transcode", "ai"];
+    static ENDPOINTS = ["worker_summary", "worker_performance"];
+
+    // Main method to fetch all data
     static async fetchPoolDetails() {
         try {
-            const responses = await Promise.all(
-                REGIONS.map(async (region) => {
-                    try {
-                        const res = await fetch(`${region.url}/workers`);
-                        if (!res.ok) throw new Error(`Failed to fetch ${region.label}`);
-                        const data = await res.json();
-                        return {
-                            region: region.label,
-                            isRegionDown: false,
-                            nodes: data.map((node) => ({...node, region: region.label})),
-                        };
-                    } catch (error) {
-                        return {region: region.label, isRegionDown: true, nodes: []};
+            const allData = {
+                summary: {
+                    total_workers: 0,
+                    total_active_connections: 0,
+                    total_pending_fees: 0,
+                    total_paid_fees: 0,
+                    average_pending_per_worker: 0,
+                    average_paid_per_worker: 0
+                },
+                worker_fees: [],
+                worker_connections: [],
+                worker_rankings: {
+                    by_fees: [],
+                    by_transcode_performance: [],
+                    by_ai_response_time: []
+                },
+                transcode_performance: [],
+                ai_performance: [],
+                last_updated: new Date().toISOString()
+            };
+
+            // Fetch all data from all regions and node types
+            const promises = [];
+
+            for (const region of this.REGIONS) {
+                for (const nodeType of this.NODE_TYPES) {
+                    for (const endpoint of this.ENDPOINTS) {
+                        const url = `${this.BASE_URL}/${region}/${nodeType}/${endpoint}.json`;
+                        const promise = this.fetchData(url, region, nodeType, endpoint);
+                        promises.push(promise);
                     }
-                })
-            );
-            return transformData(responses);
+                }
+            }
+
+            // Wait for all requests to complete (even if some fail)
+            const results = await Promise.allSettled(promises);
+
+            // Process successful results
+            results.forEach(result => {
+                if (result.status === 'fulfilled' && result.value) {
+                    this.processData(result.value, allData);
+                }
+            });
+
+            // Calculate aggregates and prepare final data object
+            this.calculateAggregates(allData);
+            this.prepareRankings(allData);
+
+            return allData;
         } catch (error) {
+            console.error("Error fetching pool details:", error);
             return null;
         }
+    }
+
+    // Helper method to fetch data from a specific URL
+    static async fetchData(url, region, nodeType, endpoint) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                console.warn(`Failed to fetch data from ${url}: ${response.statusText}`);
+                return null;
+            }
+
+            const data = await response.json();
+            return {
+                data,
+                region,
+                nodeType,
+                endpoint
+            };
+        } catch (error) {
+            console.warn(`Error fetching ${url}:`, error);
+            return null;
+        }
+    }
+
+    // Process data from a single endpoint and add it to the combined data object
+    static processData(result, allData) {
+        const { data, region, nodeType, endpoint } = result;
+
+        if (endpoint === 'worker_summary') {
+            // Process worker_summary data
+            if (data.data && data.data.workers) {
+                Object.values(data.data.workers).forEach(worker => {
+                    // Add worker fee data
+                    const existingFeeWorker = allData.worker_fees.find(w =>
+                        w.ethAddress === worker.eth_address &&
+                        w.region === worker.region &&
+                        w.node_type === worker.node_type
+                    );
+
+                    if (!existingFeeWorker) {
+                        // Add new worker fee entry
+                        allData.worker_fees.push({
+                            ethAddress: worker.eth_address,
+                            node_type: worker.node_type,
+                            region: worker.region,
+                            pending_fees: worker.pending_fees || 0,
+                            paid_fees: worker.total_fees_paid || 0,
+                            total_fees: worker.total_fees || 0
+                        });
+                    }
+
+                    // Add worker connection data
+                    const existingConnectionWorker = allData.worker_connections.find(w =>
+                        w.ethAddress === worker.eth_address &&
+                        w.region === worker.region &&
+                        w.node_type === worker.node_type
+                    );
+
+                    if (!existingConnectionWorker) {
+                        // Add new worker connection entry
+                        allData.worker_connections.push({
+                            ethAddress: worker.eth_address,
+                            node_type: worker.node_type,
+                            region: worker.region,
+                            connection_count: worker.connection_count || 0
+                        });
+                    }
+                });
+
+                // Update summary data
+                allData.summary.total_workers += data.data.aggregates.total_workers || 0;
+                allData.summary.total_active_connections += data.data.aggregates.total_connections || 0;
+                allData.summary.total_pending_fees += data.data.aggregates.total_pending_fees || 0;
+                allData.summary.total_paid_fees += data.data.aggregates.total_fees_paid || 0;
+            }
+        } else if (endpoint === 'worker_performance') {
+            // Process worker_performance data
+            if (nodeType === 'transcode' && data.transcode_performance) {
+                // Add transcode performance data
+                data.transcode_performance.forEach(perf => {
+                    allData.transcode_performance.push({
+                        ethAddress: perf.worker_address,
+                        region,
+                        avg_real_time_ratio: perf.mean_real_time_ratio,
+                        avg_response_time: perf.mean_response_time,
+                        job_count: perf.job_count
+                    });
+                });
+            }
+
+            if (nodeType === 'ai' && data.ai_performance) {
+                // Add AI performance data
+                data.ai_performance.forEach(perf => {
+                    allData.ai_performance.push({
+                        ethAddress: perf.worker_address,
+                        modelID: perf.model_id,
+                        pipeline: perf.pipeline,
+                        region,
+                        avg_response_time: perf.mean_response_time,
+                        job_count: perf.job_count
+                    });
+                });
+            }
+        }
+    }
+
+    // Calculate aggregate metrics
+    static calculateAggregates(data) {
+        // Calculate average fees per worker
+        if (data.summary.total_workers > 0) {
+            data.summary.average_pending_per_worker = data.summary.total_pending_fees / data.summary.total_workers;
+            data.summary.average_paid_per_worker = data.summary.total_paid_fees / data.summary.total_workers;
+        }
+
+        // Set last updated timestamp
+        data.last_updated = new Date().toISOString();
+    }
+
+    // Prepare worker rankings
+    static prepareRankings(data) {
+        const workerFeesMap = new Map();
+
+        // First, aggregate fees by unique ETH address
+        data.worker_fees.forEach(worker => {
+            const address = worker.ethAddress;
+            if (!workerFeesMap.has(address)) {
+                workerFeesMap.set(address, {
+                    ethAddress: address,
+                    total_fees: 0
+                });
+            }
+
+            workerFeesMap.get(address).total_fees += worker.total_fees || 0;
+        });
+        // Convert to array, sort by total fees, and take top 10
+        data.worker_rankings.by_fees = Array.from(workerFeesMap.values())
+            .sort((a, b) => b.total_fees - a.total_fees)
+            .slice(0, 10);
+
+        // Rank workers by transcode performance (real-time ratio)
+        data.worker_rankings.by_transcode_performance = data.transcode_performance
+            .map(worker => ({
+                ethAddress: worker.ethAddress,
+                avg_real_time_ratio: worker.avg_real_time_ratio
+            }))
+            .sort((a, b) => b.avg_real_time_ratio - a.avg_real_time_ratio)
+            .slice(0, 10);
+
+        // Rank workers by AI response time (faster is better)
+        data.worker_rankings.by_ai_response_time = data.ai_performance
+            .map(worker => ({
+                ethAddress: worker.ethAddress,
+                modelID: worker.modelID,
+                avg_response_time: worker.avg_response_time
+            }))
+            .sort((a, b) => a.avg_response_time - b.avg_response_time)
+            .slice(0, 10);
+    }
+
+    // Helper function for formatting ETH values (for use in components)
+    static formatEth(weiValue) {
+        // Convert from wei to ETH with 6 decimal places
+        if (typeof weiValue !== 'number') {
+            return '0.000000';
+        }
+        return (weiValue / 1e18).toFixed(6);
+    }
+
+    // Helper function to format response times from ns to ms or s
+    static formatTime(nanoseconds) {
+        if (nanoseconds < 1_000_000) {
+            return `${(nanoseconds / 1000).toFixed(2)} μs`;
+        } else if (nanoseconds < 1_000_000_000) {
+            return `${(nanoseconds / 1_000_000).toFixed(2)} ms`;
+        } else {
+            return `${(nanoseconds / 1_000_000_000).toFixed(2)} s`;
+        }
+    }
+
+    // Helper to format addresses to shortened form
+    static shortenAddress(address) {
+        if (!address || typeof address !== 'string') return '';
+        return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
     }
 }
