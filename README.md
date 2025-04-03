@@ -1,2 +1,2 @@
-# livepeer-openpool-webui
+# livepeer-grant-node-pool-webui
 

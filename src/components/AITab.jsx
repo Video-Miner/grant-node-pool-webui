@@ -1,13 +1,52 @@
 // AITab.jsx
 import React from 'react';
-import { Clock, Layers, Server, Trophy } from 'lucide-react';
+import { Clock, Layers, Server, Trophy, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './Card.jsx';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import DataService from '../api/DataService.js';
 
 import { COLORS } from '../constants/colors';
 
-const AITab = ({ data }) => {
+const AITab = ({ data, featureFlags = {} }) => {
+    // Check if AI feature is enabled
+    const isAIEnabled = featureFlags.enableAI || false;
+
+    if (!isAIEnabled) {
+        return (
+            <section className="coming-soon-container">
+                <Card className="card-col-span-4">
+                    <CardHeader>
+                        <CardTitle>AI Analytics Coming Soon</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="coming-soon-content">
+                            <Server className="coming-soon-icon" />
+                            <h3 className="coming-soon-title">Advanced AI Analytics</h3>
+                            <p className="coming-soon-description">
+                                We're working on bringing you detailed AI worker performance metrics,
+                                response times, and job analytics. Stay tuned for this exciting feature!
+                            </p>
+                            <div className="coming-soon-features">
+                                <div className="feature-item">
+                                    <Clock className="feature-icon" />
+                                    <span>Response time tracking</span>
+                                </div>
+                                <div className="feature-item">
+                                    <Layers className="feature-icon" />
+                                    <span>Job performance metrics</span>
+                                </div>
+                                <div className="feature-item">
+                                    <Trophy className="feature-icon" />
+                                    <span>Worker rankings</span>
+                                </div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </section>
+        );
+    }
+
     // Prepare AI performance data for chart
     const aiPerformanceData = data.ai_performance.map(item => ({
         name: item.modelID ? item.modelID.split('/')[1] : 'Unknown Model',

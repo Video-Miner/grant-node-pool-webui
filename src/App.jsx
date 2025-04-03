@@ -103,10 +103,11 @@ const PoolDashboard = () => {
     return (
         <main className={`dashboard ${darkMode ? 'dark' : ''}`}>
             <div className="dashboard-container">
-                <h1 className="dashboard-title">
-                    Livepeer Open Pool Dashboard
-                </h1>
+                {/* Header section now at the top */}
                 <header className="dashboard-header">
+                    <h1 className="dashboard-title">
+                        Livepeer Grant Node Pool Dashboard
+                    </h1>
                     <div className="dashboard-refresh-container">
                         <button onClick={loadData} className="theme-toggle-button" aria-label="Refresh Data">
                             <RefreshCw className="theme-icon" />
@@ -122,39 +123,42 @@ const PoolDashboard = () => {
                     </div>
                 </header>
 
-                <nav className="dashboard-tabs">
-                    <button
-                        className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('overview')}
-                    >
-                        <ChartIcon className="tab-icon" />
-                        <span>Overview</span>
-                    </button>
-                    <button
-                        className={`tab-button ${activeTab === 'transcode' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('transcode')}
-                    >
-                        <Layers className="tab-icon" />
-                        <span>Transcode</span>
-                    </button>
-                    <button
-                        className={`tab-button ${activeTab === 'ai' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('ai')}
-                    >
-                        <Zap className="tab-icon" />
-                        <span>AI</span>
-                    </button>
-                    <button
-                        className={`tab-button ${activeTab === 'workers' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('workers')}
-                    >
-                        <Users className="tab-icon" />
-                        <span>Workers</span>
-                    </button>
-                </nav>
+                {/* Main content area with sidebar and content */}
+                <div className="dashboard-main">
+                    <nav className="dashboard-tabs">
+                        <button
+                            className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('overview')}
+                        >
+                            <ChartIcon className="tab-icon" />
+                            <span>Overview</span>
+                        </button>
+                        <button
+                            className={`tab-button ${activeTab === 'transcode' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('transcode')}
+                        >
+                            <Layers className="tab-icon" />
+                            <span>Transcode</span>
+                        </button>
+                        <button
+                            className={`tab-button ${activeTab === 'ai' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('ai')}
+                        >
+                            <Zap className="tab-icon" />
+                            <span>AI</span>
+                        </button>
+                        <button
+                            className={`tab-button ${activeTab === 'workers' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('workers')}
+                        >
+                            <Users className="tab-icon" />
+                            <span>Workers</span>
+                        </button>
+                    </nav>
 
-                <div className="dashboard-content">
-                    {renderDashboardContent()}
+                    <div className="dashboard-content">
+                        {renderDashboardContent()}
+                    </div>
                 </div>
             </div>
         </main>

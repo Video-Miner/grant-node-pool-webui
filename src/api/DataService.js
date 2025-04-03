@@ -1,8 +1,8 @@
 // DataService.js
 export default class DataService {
-    static BASE_URL = "https://obj-store.xode.app/open-pool-metrics";
-    static REGIONS = ["us-central", "us-west", "eu-central", "oceania"];
-    static NODE_TYPES = ["transcode", "ai"];
+    static BASE_URL = "https://api.grant-node.xyz/grant-node-metrics";
+    static REGIONS = ["us-central", "eu-central"];
+    static NODE_TYPES = ["transcode"];
     static ENDPOINTS = ["worker_summary", "worker_performance"];
 
     // Main method to fetch all data
