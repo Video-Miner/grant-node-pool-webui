@@ -1,34 +1,53 @@
 // DataService.js
 export default class DataService {
-    static BASE_URL = "https://obj-store.xode.app/open-pool-metrics";
-    static REGIONS = ["us-central", "us-west", "eu-central", "oceania"];
-    static NODE_TYPES = ["transcode", "ai"];
-    static ENDPOINTS = ["worker_summary", "worker_performance"];
+    static BASE_URL = import.meta.env.VITE_BASE_URL;
+    static REGIONS = import.meta.env.VITE_REGIONS.split(',');
+    static NODE_TYPES = import.meta.env.VITE_NODE_TYPES.split(',');
+    static ENDPOINTS = import.meta.env.VITE_ENDPOINTS.split(',');
 
     // Main method to fetch all data
+    // Main method to fetch all data
     static async fetchPoolDetails() {
-        try {
-            const allData = {
-                summary: {
-                    total_workers: 0,
-                    total_active_connections: 0,
-                    total_pending_fees: 0,
-                    total_paid_fees: 0,
-                    average_pending_per_worker: 0,
-                    average_paid_per_worker: 0
-                },
-                worker_fees: [],
-                worker_connections: [],
-                worker_rankings: {
-                    by_fees: [],
-                    by_transcode_performance: [],
-                    by_ai_response_time: []
-                },
-                transcode_performance: [],
-                ai_performance: [],
-                last_updated: new Date().toISOString()
-            };
+        const allData = {
+            summary: {
+                total_workers: 0,
+                total_active_connections: 0,
+                total_pending_fees: 0,
+                total_paid_fees: 0,
+                average_pending_per_worker: 0,
+                average_paid_per_worker: 0
+            },
+            worker_fees: [],
+            worker_connections: [],
+            worker_rankings: {
+                by_fees: [],
+                by_transcode_performance: [],
+                by_ai_response_time: []
+            },
+            transcode_performance: [],
+            ai_performance: [],
+            last_updated: new Date().toISOString()
+        };
 
+        // Check for required configuration values
+        if (!this.BASE_URL) {
+            console.error("Missing BASE_URL configuration.");
+            return allData;
+        }
+        if (!this.REGIONS || !Array.isArray(this.REGIONS) || this.REGIONS.length === 0) {
+            console.error("Missing or invalid REGIONS configuration.");
+            return allData;
+        }
+        if (!this.NODE_TYPES || !Array.isArray(this.NODE_TYPES) || this.NODE_TYPES.length === 0) {
+            console.error("Missing or invalid NODE_TYPES configuration.");
+            return allData;
+        }
+        if (!this.ENDPOINTS || !Array.isArray(this.ENDPOINTS) || this.ENDPOINTS.length === 0) {
+            console.error("Missing or invalid ENDPOINTS configuration.");
+            return allData;
+        }
+
+        try {
             // Fetch all data from all regions and node types
             const promises = [];
 
@@ -59,7 +78,7 @@ export default class DataService {
             return allData;
         } catch (error) {
             console.error("Error fetching pool details:", error);
-            return null;
+            return allData;
         }
     }
 
