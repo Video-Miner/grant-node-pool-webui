@@ -66,7 +66,7 @@ const PoolDashboard = () => {
         loadData();
 
         // Optional: Set up an interval to refresh data periodically
-        const refreshInterval = setInterval(loadData, 60000); // Refresh every minute
+        const refreshInterval = setInterval(loadData, 60000*60); // Refresh every hour
         return () => clearInterval(refreshInterval);
     }, []);
 
@@ -149,7 +149,7 @@ const PoolDashboard = () => {
                 <header className="dashboard-main-header">
                     <div className="dashboard-title-area">
                         <h1 className="dashboard-title">
-                            Livepeer Open Pool Dashboard
+                            Open Pool Dashboard
                         </h1>
                         <div className="dashboard-controls">
                             <div className="dashboard-refresh-container">
