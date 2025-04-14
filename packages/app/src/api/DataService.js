@@ -146,10 +146,10 @@ export default class DataService {
         const { data, region, nodeType, endpoint } = result;
 
         if (endpoint === 'worker_summary') {
-            // Process worker_summary data (unchanged)
+            // Process worker_summary data
             if (data.data && data.data.workers) {
                 Object.values(data.data.workers).forEach(worker => {
-                    // Add worker fee data
+                    // Add worker fee data - using worker_earnings instead of total_fees
                     const existingFeeWorker = allData.worker_fees.find(w =>
                         w.ethAddress === worker.eth_address &&
                         w.region === worker.region &&
@@ -164,7 +164,7 @@ export default class DataService {
                             region: worker.region,
                             pending_fees: worker.pending_fees || 0,
                             paid_fees: worker.total_fees_paid || 0,
-                            total_fees: worker.total_fees || 0
+                            total_fees: worker.worker_earnings || 0
                         });
                     }
 
@@ -186,7 +186,7 @@ export default class DataService {
                     }
                 });
 
-                // Update summary data
+                // Update summary data - using post-commission values
                 allData.summary.total_workers += data.data.aggregates.total_workers || 0;
                 allData.summary.total_active_connections += data.data.aggregates.total_connections || 0;
                 allData.summary.total_pending_fees += data.data.aggregates.total_pending_fees || 0;
@@ -195,7 +195,7 @@ export default class DataService {
         } else if (endpoint === 'worker_performance') {
             // Process worker_performance data
             if (nodeType === 'transcode' && data.transcode_performance) {
-                // Add transcode performance data with compute unit metrics included
+                // Add transcode performance data
                 data.transcode_performance.forEach(perf => {
                     allData.transcode_performance.push({
                         ethAddress: perf.worker_address,
@@ -203,7 +203,6 @@ export default class DataService {
                         avg_real_time_ratio: perf.mean_real_time_ratio,
                         avg_response_time: perf.mean_response_time,
                         job_count: perf.job_count,
-                        // Add compute units metrics with the correct field names
                         median_compute_units_per_second: perf.median_compute_units_per_second,
                         mean_compute_units_per_second: perf.mean_compute_units_per_second,
                         min_compute_units_per_second: perf.min_compute_units_per_second,
@@ -214,8 +213,8 @@ export default class DataService {
                 });
             }
 
+            // AI performance data remains unchanged
             if (nodeType === 'ai' && data.ai_performance) {
-                // Add AI performance data (unchanged)
                 data.ai_performance.forEach(perf => {
                     allData.ai_performance.push({
                         ethAddress: perf.worker_address,
@@ -320,7 +319,7 @@ export default class DataService {
 
             acc[region].pending += Number(worker.pending_fees || 0);
             acc[region].paid += Number(worker.paid_fees || 0);
-            acc[region].total += Number(worker.total_fees || 0);
+            acc[region].total += Number(worker.total_fees || 0); // This now represents post-commission fees
 
             return acc;
         }, {});
